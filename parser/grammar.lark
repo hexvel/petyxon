@@ -1,0 +1,97 @@
+// Импорт стандартных токенов
+%import common.CNAME
+%import common.ESCAPED_STRING
+%import common.WS_INLINE
+%import common.INT
+%import common.FLOAT
+%ignore WS_INLINE
+
+// Определения токенов
+IDENTIFIER: CNAME
+NUMBER: /\d+(\.\d+)?/
+STRING: ESCAPED_STRING
+
+// Ключевые слова
+DECLARE: "объявить"
+FUNCTION: "функция"
+RETURN: "вернуть"
+PRINT: "вывести"
+IF: "если"
+ELSE: "иначе"
+WHILE: "пока"
+EQ: "="
+COLON: ":"
+LPAR: "("
+RPAR: ")"
+COMMA: ","
+
+// Операторы
+PLUS: "+"
+MINUS: "-"
+MULT: "*"
+DIV: "/"
+MOD: "%"
+
+EQUALS: "=="
+NE: "!="
+LT: "<"
+GT: ">"
+LE: "<="
+GE: ">="
+
+AND: "и"
+OR: "или"
+NOT: "не"
+
+// Правила грамматики
+start: statement+
+
+statement: function_def
+         | assign_statement
+         | print_statement
+         | if_statement
+         | while_statement
+         | return_statement
+         | code_block
+
+assign_statement: DECLARE IDENTIFIER EQ expr
+
+print_statement: PRINT expr
+
+function_def: FUNCTION IDENTIFIER LPAR params? RPAR COLON function_block
+
+params: IDENTIFIER (COMMA IDENTIFIER)*
+
+function_block: statement+
+
+code_block: statement+
+
+if_statement: IF expr COLON code_block (ELSE COLON code_block)?
+
+while_statement: WHILE expr COLON code_block
+
+return_statement: RETURN expr
+
+expr: term
+    | expr PLUS term
+    | expr MINUS term
+    | expr AND expr
+    | expr OR expr
+    | NOT expr
+    | expr EQUALS expr
+    | expr NE expr
+    | expr LT expr
+    | expr GT expr
+    | expr LE expr
+    | expr GE expr
+    | LPAR expr RPAR
+
+term: factor
+    | term MULT factor
+    | term DIV factor
+    | term MOD factor
+
+factor: NUMBER
+      | STRING
+      | IDENTIFIER
+      | LPAR expr RPAR
